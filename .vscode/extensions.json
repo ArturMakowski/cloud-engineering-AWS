@@ -2,11 +2,12 @@
     "recommendations": [
         // official python extensiosn
         "ms-python.python",
-        "ms-python.black-formatter",
-        "ms-python.pylint",
-        "ms-python.flake8",
+        "charliermarsh.ruff",
+        // "ms-python.black-formatter",
+        // "ms-python.pylint",
+        // "ms-python.flake8",
         "ms-python.vscode-pylance",
-        "ms-python.isort",
+        // "ms-python.isort",
         "ms-python.mypy-type-checker",
         // official extension pack for jupyter notebooks
         "ms-toolsai.jupyter",

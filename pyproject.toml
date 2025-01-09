@@ -7,6 +7,9 @@ requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
     "fastapi>=0.115.6",
+    "langchain-core>=0.3.29",
+    "langchain-openai>=0.2.14",
+    "python-dotenv>=1.0.1",
 ]
 classifiers = ["Programming Language :: Python :: 3"]
 keywords = ["one", "two"]
@@ -45,6 +48,10 @@ static-code-qa = [
     "Flake8-pyproject",
     "radon",
 ]
+dev = [
+    "ipykernel>=6.29.5",
+    "ipywidgets>=8.1.5",
+]
 # Note: For dev dependencies, you'll need to install multiple groups
 # uv pip install --group test --group release --group static-code-qa
 
@@ -55,35 +62,78 @@ static-code-qa = [
 [tool.pytest.ini_options]
 markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 
-[tool.black]
+[tool.ruff]
+# Line length and basic configuration
 line-length = 119
-exclude = '''
-/(
-    \.venv
-  | venv
-)/
-'''
+target-version = "py37"  # Specify your Python version
+extend-exclude = [".venv", "venv"]
 
-[tool.flake8]
-docstring-convention = "all"
-ignore = ["D107", "D212", "E501", "W503", "W605", "D203", "D100"]
-exclude = ["venv"]
-max-line-length = 119
-radon-max-cc = 10
-
-[tool.isort]
-profile = "black"
-multi_line_output = "VERTICAL_HANGING_INDENT"
-force_grid_wrap = 2
-line_length = 119
-
-[tool.pylint."messages control"]
-disable = [
-    "line-too-long",
-    "trailing-whitespace",
-    "missing-function-docstring",
-    "consider-using-f-string",
-    "import-error",
-    "too-few-public-methods",
-    "redefined-outer-name",
+# Enable all rules, then selectively disable
+select = ["ALL"]
+ignore = [
+    "D107",  # Missing docstring in __init__
+    "D212",  # Multi-line docstring summary should start at the first line
+    "E501",  # Line too long
+    "D203",  # 1 blank line required before class docstring
+    "D100",  # Missing docstring in public module
 ]
+
+# Formatting configuration (replacing Black)
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+docstring-code-format = true
+
+# isort settings within Ruff
+[tool.ruff.isort]
+combine-as-imports = true
+force-wrap-aliases = true
+known-first-party = ["your_package_name"]
+force-single-line = false
+lines-after-imports = 2
+
+# Docstring settings (replacing pydocstyle)
+[tool.ruff.pydocstyle]
+convention = "google"  # or "numpy", "pep257"
+
+# McCabe complexity checking (replacing radon)
+[tool.ruff.mccabe]
+max-complexity = 10
+
+# Per-file-ignores for specific situations
+[tool.ruff.per-file-ignores]
+"__init__.py" = ["E402", "F401"]
+
+# [tool.black]
+# line-length = 119
+# exclude = '''
+# /(
+#     \.venv
+#   | venv
+# )/
+# '''
+
+# [tool.flake8]
+# docstring-convention = "all"
+# ignore = ["D107", "D212", "E501", "W503", "W605", "D203", "D100"]
+# exclude = ["venv"]
+# max-line-length = 119
+# radon-max-cc = 10
+
+# [tool.isort]
+# profile = "black"
+# multi_line_output = "VERTICAL_HANGING_INDENT"
+# force_grid_wrap = 2
+# line_length = 119
+
+# [tool.pylint."messages control"]
+# disable = [
+#     "line-too-long",
+#     "trailing-whitespace",
+#     "missing-function-docstring",
+#     "consider-using-f-string",
+#     "import-error",
+#     "too-few-public-methods",
+#     "redefined-outer-name",
+# ]
