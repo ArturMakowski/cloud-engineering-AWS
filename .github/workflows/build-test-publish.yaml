@@ -98,7 +98,7 @@ jobs:
       - name: Install test dependencies
         run: |
           uv venv
-          uv pip install ./dist/*.whl pytest pytest-cov
+          uv pip install ./dist/*.whl pytest pytest-cov moto
       - name: Run tests on wheel
         run: |
           /bin/bash -x run.sh test:ci
