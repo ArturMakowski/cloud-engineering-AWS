@@ -35,7 +35,7 @@ test = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
 ]
-static-code-qa = [
+qa = [
     "pre-commit",
 ]
 dev = [
@@ -45,7 +45,7 @@ dev = [
     "rich>=13.9.4",
 ]
 # Note: For dev dependencies, you'll need to install multiple groups
-# uv sync --group test --group release --group static-code-qa --group dev
+# uv sync --group test --group qa --group dev
 
 ##############################
 # --- Code Quality Tools --- #

@@ -66,7 +66,7 @@ dev = [
     { name = "ipywidgets" },
     { name = "rich" },
 ]
-static-code-qa = [
+qa = [
     { name = "pre-commit" },
 ]
 test = [
@@ -90,7 +90,7 @@ dev = [
     { name = "ipywidgets", specifier = ">=8.1.5" },
     { name = "rich", specifier = ">=13.9.4" },
 ]
-static-code-qa = [{ name = "pre-commit" }]
+qa = [{ name = "pre-commit" }]
 test = [
     { name = "pytest", specifier = ">=8.0.0" },
     { name = "pytest-cov", specifier = ">=4.1.0" },

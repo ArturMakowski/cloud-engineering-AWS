@@ -56,7 +56,7 @@ jobs:
           uv python install "$PYTHON_VERSION"
       - name: Install pre-commit
         run: |
-          uv sync --only-group static-code-qa
+          uv sync --only-group qa
       - name: Lint, Format, and other static code quality checks
         run: |
           /bin/bash -x run.sh lint:ci

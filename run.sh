@@ -16,7 +16,7 @@ MINIMUM_TEST_COVERAGE_PERCENT=0
 
 # install core and development Python dependencies into the currently activated venv
 function install {
-    uv sync --group dev --group test --group static-code-qa
+    uv sync --group dev --group test --group qa
 }
 
 # run linting, formatting, and other static code quality tools
