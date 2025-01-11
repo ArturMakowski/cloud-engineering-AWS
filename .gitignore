@@ -174,3 +174,4 @@ dist
 *env
 *.env
 *cache*
+.DS_Store
