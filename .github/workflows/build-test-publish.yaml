@@ -91,7 +91,8 @@ jobs:
           path: ./dist/
       - name: Install test dependencies
         run: |
-          uv pip install --system ./dist/*.whl pytest pytest-cov
+          uv venv
+          uv pip install ./dist/*.whl pytest pytest-cov
       - name: Lint, Format, and other static code quality checks
         run: |
           /bin/bash -x run.sh test:ci
