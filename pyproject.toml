@@ -6,6 +6,7 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
+    "boto3>=1.35.97",
     "fastapi>=0.115.6",
     "langchain-core>=0.3.29",
     "langchain-openai>=0.2.14",
@@ -45,8 +46,10 @@ static-code-qa = [
     "radon",
 ]
 dev = [
+    "boto3-stubs[s3]>=1.35.97",
     "ipykernel>=6.29.5",
     "ipywidgets>=8.1.5",
+    "rich>=13.9.4",
 ]
 # Note: For dev dependencies, you'll need to install multiple groups
 # uv sync --group test --group release --group static-code-qa --group dev
