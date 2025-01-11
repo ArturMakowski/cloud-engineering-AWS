@@ -23,7 +23,7 @@ jobs:
           fetch-depth: 0
       - name: Tag with the release version
         run: |
-          git tag $(cat version.txt)
+          git tag "$(cat version.txt)"
   lint-format-and-static-code-checks:
     runs-on: ubuntu-latest
     steps:
@@ -32,8 +32,8 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Set up Python
         run: |
-          PYTHON_VERSION=$(cat .python-version)
-          uv python install $PYTHON_VERSION
+          PYTHON_VERSION="$(cat .python-version)"
+          uv python install "$PYTHON_VERSION"
       - name: Install pre-commit
         run: |
           uv sync --group static-code-qa
@@ -48,8 +48,8 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Set up Python
         run: |
-          PYTHON_VERSION=$(cat .python-version)
-          uv python install $PYTHON_VERSION
+          PYTHON_VERSION="$(cat .python-version)"
+          uv python install "$PYTHON_VERSION"
       - name: Build python package
         run: |
           /bin/bash -x run.sh build
@@ -68,8 +68,8 @@ jobs:
         uses: astral-sh/setup-uv@v5
       - name: Set up Python
         run: |
-          PYTHON_VERSION=$(cat .python-version)
-          uv python install $PYTHON_VERSION
+          PYTHON_VERSION="$(cat .python-version)"
+          uv python install "$PYTHON_VERSION"
       - name: Download wheel and sdist
         uses: actions/download-artifact@v4
         with:
