@@ -21,9 +21,23 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - name: Configure Git
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'github-actions@github.com'
       - name: Tag with the release version
         run: |
-          git tag "$(cat version.txt)"
+          VERSION=$(cat version.txt)
+          echo "Version from file: $VERSION"
+
+          # Check if tag exists
+          if ! git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Creating new tag: $VERSION"
+            git tag "$VERSION"
+            git push origin "$VERSION"
+          else
+            echo "Tag $VERSION already exists"
+          fi
   lint-format-and-static-code-checks:
     runs-on: ubuntu-latest
     steps:
