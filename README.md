@@ -1,3 +1,15 @@
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+## Table of Contents
+
+- [aws-python](#aws-python)
+  - [Quick start](#quick-start)
+  - [Developing/Contributing](#developingcontributing)
+    - [System requirements](#system-requirements)
+    - [Installing the dev dependencies](#installing-the-dev-dependencies)
+
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
+
 # aws-python
 
 ## Quick start
@@ -20,7 +32,7 @@ You will need the following installed on your machine to develop on this codebas
 - Python 3.7+, ideally using `pyenv` to easily change between Python versions
 - `git`
 
-###
+### Installing the dev dependencies
 
 ```bash
 # clone the repo

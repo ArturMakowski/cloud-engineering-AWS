@@ -1,78 +1,70 @@
-# See https://pre-commit.com for more information
-# See https://pre-commit.com/hooks.html for more hooks
 repos:
+  # General purpose pre-commit hooks
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.4.0
+    rev: v5.0.0
     hooks:
-      # Fails if there are any ">>>>>" lines in files due to merge conflicts.
+      # Checks for files that contain merge conflict strings
       - id: check-merge-conflict
-      # Trims trailing whitespace. Allow a single space on the end of .md lines for hard line breaks.
+      # Trims trailing whitespace, respecting Markdown line breaks
       - id: trailing-whitespace
         args: [--markdown-linebreak-ext=md]
-      # Makes sure files end in a newline and only a newline;
+      # Ensures files end with a newline
       - id: end-of-file-fixer
-      # Attempts to load all TOML files to verify syntax.
+      # Attempts to load all TOML files to verify syntax
       - id: check-toml
-      # Attempts to load all yaml files to verify syntax; unsafe: only check syntax, do not load yaml
+      # Attempts to load all YAML files to verify syntax
       - id: check-yaml
         args: ["--unsafe"]
-      # Check for symlinks that do not point to anything.
+      # Checks for symlinks that do not point to anything
       - id: check-symlinks
-      # Fail if staged files are above a certain size.
-      # To add a large file, use 'git lfs track <file>; git add <file> to track large files with
-      # git-lfs rather than commiting them directly to the git history
+      # Prevents giant files from being committed
       - id: check-added-large-files
         args: ["--maxkb=500"]
-
-        # HALT! Before you exclude a large file and commit it, forever
-        # bloating our repo size, did you:
-        # (1) use a CLI tool like imageoptim to compress them if they are images
-        # (2) think hard about whether using DVC or git-lfs is more appropriate
-        #     for the file--such as in the case of CSV files or other data
-        # This can be confusing. Reach out for help in our chat to help decide
-        # how to deal adding these large files you have :)
-        exclude: |
-          (?x)(
-              ^example/large/file.csv|
-              ^example/large/sklearn-model.pkl
-          )
-      # Sort requirements in requirements.txt files.
+      # Sorts entries in requirements.txt
       - id: requirements-txt-fixer
-      # Prevent addition of new git submodules.
+      # Prevents adding new git submodules
       - id: forbid-new-submodules
-      # Prevent committing directly to trunk (since Bitbucket wants us to pay for this feature)
-      - id: no-commit-to-branch
-        args: ["--branch=main"]
-      # Detects the presence of private keys
+      # Prevents direct commits to specified branches (e.g., main)
+      # - id: no-commit-to-branch
+      #   args: ["--branch=main"]
+      # Detects private keys
       - id: detect-private-key
-
+      # Checks that Python docstrings are first
+      - id: check-docstring-first
+      # Checks for debugger imports and py37+ `breakpoint()` calls
+      - id: debug-statements
+        # Verifies that test files are named correctly
+        # - id: name-tests-test
+        #   args: ["--pytest-test-first"]
+        # Ensures JSON files are properly formatted
+        # - id: pretty-format-json
+        #   args:
+        #     - "--autofix"
+        #     - "--indent=4"
+        #     - "--no-sort-keys"
+        #   exclude: ^.*\.ipynb$
+  # Python-specific hooks
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.9.1
+    hooks:
+      # Fast Python linter
+      - id: ruff
+        args: [--fix, --exit-non-zero-on-fix]
+      # Python formatter
+      - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.2.0"
+    rev: "v1.14.1"
     hooks:
       - id: mypy
-        args:
-          [
-            --no-strict-optional,
-            --ignore-missing-imports,
-            --config-file=./pyproject.toml,
-          ]
-
-  - repo: https://github.com/psf/black
-    rev: 23.1.0
+        args: [--no-strict-optional, --ignore-missing-imports, --config-file=./pyproject.toml]
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.8.0
     hooks:
-      - id: black
-        args:
-          - --config=./pyproject.toml
-
-  - repo: https://github.com/PyCQA/pylint
-    rev: v2.16.3
-    hooks:
-      - id: pylint
-        args:
-          - --rcfile=./pyproject.toml
-
+      # Finds common security issues in Python code
+      - id: bandit
+        args: ["-x", "tests", "--skip", "B101", "--skip", "B104"]
   - repo: https://github.com/PyCQA/flake8
-    rev: 6.0.0
+    rev: 7.1.1
     hooks:
       - id: flake8
         args:
@@ -81,20 +73,106 @@ repos:
           - radon
           - flake8-docstrings
           - Flake8-pyproject
-
-  - repo: https://github.com/pycqa/isort
-    rev: 5.12.0
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.19.1
     hooks:
-      - id: isort
-        args:
-          - --settings-path=./pyproject.toml
-
-  - repo: https://github.com/PyCQA/autoflake
-    rev: v2.0.1
+      # Automatically upgrades Python syntax for newer versions
+      - id: pyupgrade
+        args: [--py38-plus]
+  - repo: https://github.com/econchick/interrogate
+    rev: 1.7.0
     hooks:
-      - id: autoflake
-        args:
-          - --in-place
-          - --remove-all-unused-imports
-          - --remove-unused-variable
-          - --ignore-init-module-imports
+      # Checks for missing docstrings
+      - id: interrogate
+        args: [-vv, -i, --fail-under=75, --ignore-init-module]
+  - repo: https://github.com/kynan/nbstripout
+    rev: 0.8.1
+    hooks:
+      # Strips output from Jupyter and IPython notebooks
+      - id: nbstripout
+  - repo: https://github.com/jendrikseipp/vulture
+    rev: v2.14
+    hooks:
+      # Finds unused code in Python programs
+      - id: vulture
+        args: ["src", "--min-confidence", "99"]
+  # - repo: local
+  #   hooks:
+  #     # Runs pytest
+  #     - id: pytest-check
+  #       name: pytest-check
+  #       entry: pytest --cov=src/ --cov-fail-under=80 tests/
+  #       language: system
+  #       pass_filenames: false
+  #       always_run: true
+  # Docker-specific hooks
+  - repo: https://github.com/IamTheFij/docker-pre-commit
+    rev: v3.0.1
+    hooks:
+      # Checks that docker-compose files are valid
+      - id: docker-compose-check
+  - repo: https://github.com/pryorda/dockerfilelint-precommit-hooks
+    rev: v0.1.0
+    hooks:
+      # Lints Dockerfiles
+      - id: dockerfilelint
+        stages: [pre-commit]
+  # Security checks
+  - repo: https://github.com/Yelp/detect-secrets
+    rev: v1.5.0
+    hooks:
+      # Detects secrets in your codebase
+      - id: detect-secrets
+  # Commit message and branch naming conventions
+  - repo: https://github.com/commitizen-tools/commitizen
+    rev: v4.1.0
+    hooks:
+      # Checks if the commit message matches the commitizen format
+      - id: commitizen
+        stages: [commit-msg]
+      # Checks if the current branch name matches the commitizen format
+      - id: commitizen-branch
+        stages: [pre-push]
+  # GitHub Actions linting
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.6
+    hooks:
+      # Lints GitHub Actions workflow files
+      - id: actionlint
+  # YAML formatting and linting
+  - repo: https://github.com/google/yamlfmt
+    rev: v0.15.0
+    hooks:
+      # Formats YAML files
+      - id: yamlfmt
+  - repo: https://github.com/adrienverge/yamllint
+    rev: v1.35.1
+    hooks:
+      # Lints YAML files
+      - id: yamllint
+        args: [-d, "{extends: default, rules: {document-start: disable, truthy: disable, line-length: disable, comments-indentation: disable}}"]
+  # Markdown-specific hooks
+  - repo: https://github.com/thlorenz/doctoc
+    rev: v2.2.0
+    hooks:
+      # Automatically generates table of contents for markdown files
+      - id: doctoc
+        args: ["--title", "## Table of Contents", "--maxlevel", "3"]
+  - repo: https://github.com/igorshubovych/markdownlint-cli
+    rev: v0.43.0
+    hooks:
+      # Lints README.md, disabling: first line should be a top-level header
+      - id: markdownlint
+        name: markdownlint (README.md)
+        args: ["--disable", "MD041", "README.md"]
+        files: README\.md
+      # Lints all other markdown files
+      - id: markdownlint
+        name: markdownlint (other markdown files)
+        files: \.md$
+        exclude: README\.md
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    # uv version.
+    rev: 0.5.17
+    hooks:
+      - id: uv-lock

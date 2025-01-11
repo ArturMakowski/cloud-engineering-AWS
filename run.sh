@@ -16,20 +16,19 @@ MINIMUM_TEST_COVERAGE_PERCENT=0
 
 # install core and development Python dependencies into the currently activated venv
 function install {
-    python -m pip install --upgrade pip
-    python -m pip install --editable "$THIS_DIR/[dev]"
+    uv sync --group dev --group test --group static-code-qa
 }
 
 # run linting, formatting, and other static code quality tools
 function lint {
-    pre-commit run --all-files
+    uv run pre-commit run --all-files
 }
 
 # same as `lint` but with any special considerations for CI
 function lint:ci {
     # We skip no-commit-to-branch since that blocks commits to `main`.
     # All merged PRs are commits to `main` so this must be disabled.
-    SKIP=no-commit-to-branch pre-commit run --all-files
+    SKIP=no-commit-to-branch uv run pre-commit run --all-files
 }
 
 # execute tests that are not marked as `slow`
@@ -39,7 +38,7 @@ function test:quick {
 
 # execute tests against the installed package; assumes the wheel is already installed
 function test:ci {
-    INSTALLED_PKG_DIR="$(python -c 'import fastapi; print(fastapi.__path__[0])')"
+    INSTALLED_PKG_DIR="$(uv run python -c 'import aws_python; print(aws_python.__path__[0])')"
     # in CI, we must calculate the coverage for the installed package, not the src/ folder
     COVERAGE_DIR="$INSTALLED_PKG_DIR" run-tests
 }
@@ -52,7 +51,7 @@ function run-tests {
     rm -rf "$THIS_DIR/test-reports" || mkdir "$THIS_DIR/test-reports"
 
     # execute the tests, calculate coverage, and generate coverage reports in the test-reports dir
-    python -m pytest ${@:-"$THIS_DIR/tests/"} \
+    uv run pytest ${@:-"$THIS_DIR/tests/"} \
         --cov "${COVERAGE_DIR:-$THIS_DIR/src}" \
         --cov-report html \
         --cov-report term \
@@ -66,26 +65,23 @@ function run-tests {
 }
 
 function test:wheel-locally {
-    deactivate || true
     rm -rf test-env || true
-    python -m venv test-env
-    source test-env/bin/activate
+    uv venv test-env
     clean || true
-    pip install build
-    build
-    pip install ./dist/*.whl pytest pytest-cov
+    uv build
+    uv pip install ./dist/*.whl pytest pytest-cov --python test-env
     test:ci
-    deactivate || true
+    rm -rf test-env || true
 }
 
 # serve the html test coverage report on localhost:8000
 function serve-coverage-report {
-    python -m http.server --directory "$THIS_DIR/test-reports/htmlcov/" 8000
+    uv run python -m http.server --directory "$THIS_DIR/test-reports/htmlcov/" 8000
 }
 
 # build a wheel and sdist from the Python source code
 function build {
-    python -m build --sdist --wheel "$THIS_DIR/"
+    uv build --sdist --wheel "$THIS_DIR/"
 }
 
 function release:test {
