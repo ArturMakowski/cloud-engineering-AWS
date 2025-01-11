@@ -37,13 +37,6 @@ test = [
 ]
 static-code-qa = [
     "pre-commit",
-    "pylint",
-    "black",
-    "isort",
-    "flake8",
-    "flake8-docstrings",
-    "Flake8-pyproject",
-    "radon",
 ]
 dev = [
     "boto3-stubs[s3]>=1.35.97",
