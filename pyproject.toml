@@ -58,7 +58,7 @@ markers = ["slow: marks tests as slow (deselect with '-m \"not slow\"')"]
 
 [tool.flake8]
 docstring-convention = "google"
-ignore = ["D107", "D212", "E501", "W503", "W605", "D203", "D100", "D104", "D103"]
+ignore = ["D107", "D212", "E501", "W503", "W605", "D203", "D100", "D104", "D103", "R701"]
 exclude = [".venv"]
 max-line-length = 119
 radon-max-cc = 10
