@@ -45,7 +45,7 @@ repos:
         #   exclude: ^.*\.ipynb$
   # Python-specific hooks
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.1
+    rev: v0.9.2
     hooks:
       # Fast Python linter
       - id: ruff
@@ -58,7 +58,7 @@ repos:
       - id: mypy
         args: [--no-strict-optional, --ignore-missing-imports, --config-file=./pyproject.toml]
   - repo: https://github.com/PyCQA/bandit
-    rev: 1.8.0
+    rev: 1.8.2
     hooks:
       # Finds common security issues in Python code
       - id: bandit
@@ -135,7 +135,7 @@ repos:
         stages: [pre-push]
   # GitHub Actions linting
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.6
+    rev: v1.7.7
     hooks:
       # Lints GitHub Actions workflow files
       - id: actionlint
@@ -173,6 +173,6 @@ repos:
         exclude: README\.md
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.5.17
+    rev: 0.5.21
     hooks:
       - id: uv-lock

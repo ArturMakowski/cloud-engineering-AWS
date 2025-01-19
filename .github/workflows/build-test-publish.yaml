@@ -19,6 +19,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Verify version.txt exists
+        run: |
+          if [ ! -f version.txt ]; then
+            echo "version.txt is missing!"
+            exit 1
+          fi
+          echo "Version: $(cat version.txt)"
+  create-tag:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' # Only run on main branch
+    needs: check-version-txt
+    steps:
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Configure Git
