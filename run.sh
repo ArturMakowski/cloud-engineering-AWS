@@ -14,9 +14,11 @@ MINIMUM_TEST_COVERAGE_PERCENT=0
 # --- Task Functions --- #
 ##########################
 
-# start the FastAPI app, enabling hot reload on save (assuming files_api packages is installed)
+# start the FastAPI app, enabling hot reload on save (assuming aws_python packages is installed)
 function run {
-    AWS_PROFILE=aws-course-sso uv run uvicorn src.aws_python.main:APP --reload
+    AWS_PROFILE=aws-course-sso \
+    S3_BUCKET_NAME="test-bucket" \
+    uv run uvicorn src.aws_python.main:create_app --reload  --factory
 }
 
 # start the FastAPI app, pointed at a mocked aws endpoint
@@ -33,23 +35,27 @@ function run-mock {
     export AWS_SECRET_ACCESS_KEY="mock" # pragma: allowlist secret
     export AWS_ACCESS_KEY_ID="mock"
     export AWS_DEFAULT_REGION="us-east-1"
+    export S3_BUCKET_NAME="test-bucket"
 
     # create a bucket called "some-bucket" using the mocked aws server
-    aws s3 mb s3://some-bucket
+    aws s3 mb "s3://$S3_BUCKET_NAME"
 
     # Trap EXIT signal to kill the moto.server process when uvicorn stops
     trap 'kill $MOTO_PID' EXIT
 
     # Set AWS endpoint URL and start FastAPI app with uvicorn in the foreground
-    uv run uvicorn src.aws_python.main:APP --reload
+    uv run uvicorn src.aws_python.main:create_app --reload --factory
 
     # Wait for the moto.server process to finish (this is optional if you want to keep it running)
     wait $MOTO_PID
 }
 
-# start the FastAPI app, enabling hot reload on save (assuming files_api packages is not installed)
+# start the FastAPI app, enabling hot reload on save (assuming aws_python packages is not installed)
 function run-py {
-    AWS_PROFILE=cloud-course  PYTHONPATH="${THIS_DIR}/src" uv run uvicorn src.aws_python.main:APP --reload
+    AWS_PROFILE=aws-course-sso \
+    S3_BUCKET_NAME="test-bucket" \
+    PYTHONPATH="${THIS_DIR}/src" \
+    uv run uvicorn src.aws_python.main:create_app --reload  --factory
 }
 
 # install core and development Python dependencies into the currently activated venv

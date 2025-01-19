@@ -15,6 +15,7 @@ dependencies = [
     "python-multipart>=0.0.20",
     "uvicorn>=0.34.0",
     "moto[server]>=5.0.26",
+    "pydantic-settings>=2.7.1",
 ]
 classifiers = ["Programming Language :: Python :: 3"]
 keywords = ["one", "two"]
