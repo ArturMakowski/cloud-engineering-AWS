@@ -5,7 +5,9 @@ import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
 
-from aws_python.main import APP
+from aws_python.main import create_app
+from aws_python.settings import Settings
+from tests.consts import TEST_BUCKET_NAME
 
 # Constants for testing
 TEST_FILE_PATH = "test.txt"
@@ -15,8 +17,10 @@ TEST_FILE_CONTENT_TYPE = "text/plain"
 
 # Fixture for FastAPI test client
 @pytest.fixture
-def client(mocked_aws):  # noqa
-    with TestClient(APP) as client:
+def client(mocked_aws):
+    settings = Settings(s3_bucket_name=TEST_BUCKET_NAME)
+    app = create_app(settings=settings)
+    with TestClient(app) as client:
         yield client
 
 
