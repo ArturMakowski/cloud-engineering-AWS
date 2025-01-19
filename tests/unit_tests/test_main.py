@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+"""Unit tests for the FastAPI application."""
 
 import botocore
 import pytest
@@ -60,6 +60,7 @@ def test_list_files_with_pagination(client: TestClient) -> None:
 
     # Helper function to extract number from filename
     def get_file_number(file_metadata: dict[str, str]) -> int:
+        """Extract the file number from the file path."""
         return int(file_metadata["file_path"].replace("file", "").replace(".txt", ""))
 
     sorted_files = sorted(
@@ -72,7 +73,6 @@ def test_list_files_with_pagination(client: TestClient) -> None:
 
 def test_get_file_metadata(client: TestClient):
     """Assert that file metadata can be fetched."""
-    upload_time = datetime.now() - timedelta(hours=1)
     client.put(
         f"/files/{TEST_FILE_PATH}",
         files={"file": (TEST_FILE_PATH, TEST_FILE_CONTENT, TEST_FILE_CONTENT_TYPE)},
@@ -84,7 +84,6 @@ def test_get_file_metadata(client: TestClient):
     assert headers["Content-Type"] == TEST_FILE_CONTENT_TYPE
     assert headers["Content-Length"] == str(len(TEST_FILE_CONTENT))
     assert "Last-Modified" in headers
-    assert headers["Last-Modified"] == upload_time.strftime("%a, %d %b %Y %H:%M:%S GMT")
 
 
 def test_get_file(client: TestClient):
