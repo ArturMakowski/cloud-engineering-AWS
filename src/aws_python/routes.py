@@ -3,6 +3,7 @@
 from fastapi import (
     APIRouter,
     Depends,
+    HTTPException,
     Request,
     Response,
     UploadFile,
@@ -100,6 +101,14 @@ async def get_file_metadata(
 ) -> Response:
     """Retrieve file metadata."""
     settings: Settings = request.app.state.settings
+    object_exists = object_exists_in_s3(
+        bucket_name=settings.s3_bucket_name, object_key=file_path
+    )
+    if not object_exists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+        )
+
     get_object_response = fetch_s3_object(settings.s3_bucket_name, object_key=file_path)
     response.headers["Content-Type"] = get_object_response["ContentType"]
     response.headers["Content-Length"] = str(get_object_response["ContentLength"])
@@ -117,6 +126,14 @@ async def get_file(
 ) -> StreamingResponse:
     """Retrieve a file."""
     settings: Settings = request.app.state.settings
+    object_exists = object_exists_in_s3(
+        bucket_name=settings.s3_bucket_name, object_key=file_path
+    )
+
+    if not object_exists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+        )
     get_object_response = fetch_s3_object(settings.s3_bucket_name, object_key=file_path)
     return StreamingResponse(
         content=get_object_response["Body"],
@@ -132,6 +149,14 @@ async def delete_file(
 ) -> Response:
     """Delete a file."""
     settings: Settings = request.app.state.settings
+    object_exists = object_exists_in_s3(
+        bucket_name=settings.s3_bucket_name, object_key=file_path
+    )
+
+    if not object_exists:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
+        )
     delete_s3_object(settings.s3_bucket_name, object_key=file_path)
     response.status_code = status.HTTP_204_NO_CONTENT
     return response

@@ -1,11 +1,13 @@
 import os
 
 import boto3
+import botocore.exceptions
 from loguru import logger
 from moto import mock_aws
 from pytest import fixture
 
 from tests.consts import TEST_BUCKET_NAME
+from tests.utils import delete_s3_bucket
 
 
 def point_away_from_aws():
@@ -30,8 +32,12 @@ def mocked_aws():
         yield
 
         logger.info("Deleting test bucket...")
-        response = client.list_objects_v2(Bucket=TEST_BUCKET_NAME)
-        for obj in response.get("Contents", []):
-            client.delete_object(Bucket=TEST_BUCKET_NAME, Key=obj["Key"])
-        client.delete_bucket(Bucket=TEST_BUCKET_NAME)
+        try:
+            delete_s3_bucket(TEST_BUCKET_NAME)
+        except botocore.exceptions.ClientError as err:
+            if err.response["Error"]["Code"] == "NoSuchBucket":
+                pass
+            else:
+                raise
+
         logger.info("Test bucket deleted.")
