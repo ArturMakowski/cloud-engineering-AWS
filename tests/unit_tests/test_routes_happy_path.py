@@ -1,27 +1,12 @@
 """Unit tests for the FastAPI application."""
 
-import botocore
-import pytest
 from fastapi import status
 from fastapi.testclient import TestClient
-
-from aws_python.main import create_app
-from aws_python.settings import Settings
-from tests.consts import TEST_BUCKET_NAME
 
 # Constants for testing
 TEST_FILE_PATH = "test.txt"
 TEST_FILE_CONTENT = b"Hello, world!"
 TEST_FILE_CONTENT_TYPE = "text/plain"
-
-
-# Fixture for FastAPI test client
-@pytest.fixture
-def client(mocked_aws):
-    settings = Settings(s3_bucket_name=TEST_BUCKET_NAME)
-    app = create_app(settings=settings)
-    with TestClient(app) as client:
-        yield client
 
 
 def test_upload_file(client: TestClient) -> None:
@@ -110,7 +95,7 @@ def test_delete_file(client: TestClient):
     )
 
     response = client.delete(f"/files/{TEST_FILE_PATH}")
-    assert response.status_code == 204
+    assert response.status_code == status.HTTP_204_NO_CONTENT
 
-    with pytest.raises(botocore.exceptions.ClientError):
-        response = client.get(f"/files/{TEST_FILE_PATH}")
+    response = client.get(f"/files/{TEST_FILE_PATH}")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
