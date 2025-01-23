@@ -28,7 +28,7 @@ jobs:
           echo "Version: $(cat version.txt)"
   create-tag:
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' # Only run on main branch
+    if: github.ref == 'refs/heads/main'
     needs: check-version-txt
     steps:
       - uses: actions/checkout@v4
