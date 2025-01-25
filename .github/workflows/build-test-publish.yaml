@@ -25,6 +25,7 @@ jobs:
             echo "version.txt is missing!"
             exit 1
           fi
+          git tag $(cat version.txt)
           echo "Version: $(cat version.txt)"
   create-tag:
     runs-on: ubuntu-latest
@@ -56,6 +57,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # Cache pre-commit dependencies
+      # we need docker to run the oasdiff CLI pre-commit hook
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3.3.0
       - name: Cache pre-commit
         uses: actions/cache@v4
         with:
