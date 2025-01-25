@@ -25,7 +25,7 @@ jobs:
             echo "version.txt is missing!"
             exit 1
           fi
-          git tag "$(cat version.txt)""
+          git tag "$(cat version.txt)"
           echo "Version: $(cat version.txt)"
   create-tag:
     runs-on: ubuntu-latest
