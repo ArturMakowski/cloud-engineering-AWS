@@ -5,6 +5,7 @@ from typing import Optional
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
     model_validator,
 )
@@ -19,16 +20,22 @@ DEFAULT_GET_FILES_DIRECTORY = ""
 class FileMetadata(BaseModel):
     """Metadata for a file."""
 
-    file_path: str
-    last_modified: datetime
-    size_bytes: int
+    file_path: str = Field(
+        description="The path of the file.",
+        json_schema_extra={"example": "path/to/pyproject.toml"},
+    )
+    last_modified: datetime = Field(description="The last modified date of the file.")
+    size_bytes: int = Field(description="The size of the file in bytes.")
 
 
 class PutFileResponse(BaseModel):
     """Response for uploading a file."""
 
-    file_path: str
-    message: str
+    file_path: str = Field(
+        description="The path of the file.",
+        json_schema_extra={"example": "path/to/pyproject.toml"},
+    )
+    message: str = Field(description="A message about the operation.")
 
 
 class ListFilesResponse(BaseModel):
@@ -42,6 +49,26 @@ class GetFilesResponse(BaseModel):
 
     files: list[FileMetadata]
     next_page_token: Optional[str]
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "files": [
+                    {
+                        "file_path": "path/to/pyproject.toml",
+                        "last_modified": "2022-01-01T00:00:00Z",
+                        "size_bytes": 512,
+                    },
+                    {
+                        "file_path": "path/to/Makefile",
+                        "last_modified": "2022-01-01T00:00:00Z",
+                        "size_bytes": 256,
+                    },
+                ],
+                "next_page_token": "next_page_token_example",
+            }
+        }
+    )
 
 
 class GetFilesQueryParams(BaseModel):
