@@ -25,7 +25,7 @@ jobs:
             echo "version.txt is missing!"
             exit 1
           fi
-          git tag $(cat version.txt)
+          git tag "$(cat version.txt)""
           echo "Version: $(cat version.txt)"
   create-tag:
     runs-on: ubuntu-latest
@@ -56,6 +56,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          # we need to fetch all branches/history so we can grab openapi.json out of the main branch
+          fetch-depth: 0
       # Cache pre-commit dependencies
       # we need docker to run the oasdiff CLI pre-commit hook
       - name: Set up Docker Buildx
