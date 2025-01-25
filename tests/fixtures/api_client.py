@@ -10,7 +10,7 @@ from tests.consts import TEST_BUCKET_NAME
 
 # Fixture for FastAPI test client
 @pytest.fixture
-def client(mocked_aws):
+def client(mocked_aws, mocked_openai):
     """Create a FastAPI test client."""
     settings = Settings(s3_bucket_name=TEST_BUCKET_NAME)
     app = create_app(settings=settings)

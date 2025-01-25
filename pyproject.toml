@@ -49,6 +49,7 @@ dev = [
     "ipykernel>=6.29.5",
     "ipywidgets>=8.1.5",
     "rich>=13.9.4",
+    "types-requests>=2.32.0.20241016",
 ]
 # Note: For dev dependencies, you'll need to install multiple groups
 # uv sync --group test --group qa --group dev
@@ -66,3 +67,6 @@ ignore = ["D107", "D212", "E501", "W503", "W605", "D203", "D100", "D104", "D103"
 exclude = [".venv"]
 max-line-length = 119
 radon-max-cc = 10
+
+[tool.mypy]
+disable_error_code = "import-untyped"
