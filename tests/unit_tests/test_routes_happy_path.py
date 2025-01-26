@@ -3,6 +3,8 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
+from aws_python.schemas import GeneratedFileType
+
 # Constants for testing
 TEST_FILE_PATH = "test.txt"
 TEST_FILE_CONTENT = b"Hello, world!"
@@ -99,3 +101,67 @@ def test_delete_file(client: TestClient):
 
     response = client.get(f"/v1/files/{TEST_FILE_PATH}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
+
+
+def test_generate_text(client: TestClient):
+    """Test generating text using POST method."""
+    response = client.post(
+        url=f"/v1/files/generated/{TEST_FILE_PATH}",
+        params={"prompt": "Test Prompt", "file_type": GeneratedFileType.TEXT.value},
+    )
+
+    respone_data = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert (
+        respone_data["message"]
+        == f"New {GeneratedFileType.TEXT.value} file generated and uploaded at path: {TEST_FILE_PATH}"
+    )
+
+    response = client.get(f"/v1/files/{TEST_FILE_PATH}")
+    assert response.status_code == status.HTTP_200_OK
+    assert (
+        response.content
+        == b"This is a mock response from the chat completion endpoint."
+    )
+    assert "text/plain" in response.headers["Content-Type"]
+
+
+def test_generate_image(client: TestClient):
+    """Test generating image using POST method."""
+    IMAGE_FILE_PATH = "some/nested/path/image.png"
+    response = client.post(
+        url=f"/v1/files/generated/{IMAGE_FILE_PATH}",
+        params={"prompt": "Test Prompt", "file_type": GeneratedFileType.IMAGE.value},
+    )
+
+    respone_data = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert (
+        respone_data["message"]
+        == f"New {GeneratedFileType.IMAGE.value} file generated and uploaded at path: {IMAGE_FILE_PATH}"
+    )
+
+    response = client.get(f"/v1/files/{IMAGE_FILE_PATH}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.content is not None
+    assert response.headers["Content-Type"] in ["image/png", "image/jpeg"]
+
+
+def test_generate_audio(client: TestClient):
+    """Test generating an audio file using the POST method."""
+    audio_file_path = "some-audio.mp3"
+    response = client.post(
+        url=f"/v1/files/generated/{audio_file_path}",
+        params={"prompt": "Test Prompt", "file_type": GeneratedFileType.AUDIO.value},
+    )
+
+    response_data = response.json()
+    assert response.status_code == status.HTTP_201_CREATED
+    assert response_data["message"] == (
+        f"New text-to-speech file generated and uploaded at path: {audio_file_path}"
+    )
+
+    response = client.get(f"/v1/files/{audio_file_path}")
+    assert response.status_code == status.HTTP_200_OK
+    assert response.content is not None
+    assert response.headers["Content-Type"] == "audio/mpeg"

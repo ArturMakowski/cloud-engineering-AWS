@@ -19,4 +19,5 @@ pytest_plugins = [
     # e.g. "tests/fixtures/mocked_aws.py" should be registered as:
     "tests.fixtures.mocked_aws",
     "tests.fixtures.api_client",
+    "tests.fixtures.mocked_openai",
 ]
