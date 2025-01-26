@@ -291,6 +291,7 @@ async def generate_file_using_openai(
         async with httpx.AsyncClient() as client:
             image_response = await client.get(image_url)
         file_content_bytes = image_response.content
+        content_type = image_response.headers["Content-Type"]
 
     # generate audio
     else:

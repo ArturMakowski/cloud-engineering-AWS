@@ -144,7 +144,7 @@ def test_generate_image(client: TestClient):
     response = client.get(f"/v1/files/{IMAGE_FILE_PATH}")
     assert response.status_code == status.HTTP_200_OK
     assert response.content is not None
-    assert response.headers["Content-Type"] == "image/png"
+    assert response.headers["Content-Type"] in ["image/png", "image/jpeg"]
 
 
 def test_generate_audio(client: TestClient):
