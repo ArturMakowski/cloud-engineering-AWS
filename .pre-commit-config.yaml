@@ -26,24 +26,14 @@ repos:
       # Prevents adding new git submodules
       - id: forbid-new-submodules
       # Prevents direct commits to specified branches (e.g., main)
-      # - id: no-commit-to-branch
-      #   args: ["--branch=main"]
+      - id: no-commit-to-branch
+        args: ["--branch=main"]
       # Detects private keys
       - id: detect-private-key
       # Checks that Python docstrings are first
       - id: check-docstring-first
       # Checks for debugger imports and py37+ `breakpoint()` calls
       - id: debug-statements
-        # Verifies that test files are named correctly
-        # - id: name-tests-test
-        #   args: ["--pytest-test-first"]
-        # Ensures JSON files are properly formatted
-        # - id: pretty-format-json
-        #   args:
-        #     - "--autofix"
-        #     - "--indent=4"
-        #     - "--no-sort-keys"
-        #   exclude: ^.*\.ipynb$
   # Python-specific hooks
   - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: v0.9.2
@@ -97,15 +87,6 @@ repos:
       # Finds unused code in Python programs
       - id: vulture
         args: ["src", "--min-confidence", "99"]
-  # - repo: local
-  #   hooks:
-  #     # Runs pytest
-  #     - id: pytest-check
-  #       name: pytest-check
-  #       entry: pytest --cov=src/ --cov-fail-under=80 tests/
-  #       language: system
-  #       pass_filenames: false
-  #       always_run: true
   # Docker-specific hooks
   - repo: https://github.com/IamTheFij/docker-pre-commit
     rev: v3.0.1
@@ -117,6 +98,7 @@ repos:
     hooks:
       # Lints Dockerfiles
       - id: dockerfilelint
+        args: [--ignore, missing_tag]
         stages: [pre-commit]
   # Security checks
   - repo: https://github.com/Yelp/detect-secrets
@@ -177,6 +159,8 @@ repos:
     rev: 0.5.21
     hooks:
       - id: uv-lock
+      - id: pip-compile
+        args: [pyproject.toml, -o, requirements.txt]
   # Local hooks
   - repo: local
     hooks:
@@ -230,3 +214,7 @@ repos:
         pass_filenames: false
         always_run: false
         verbose: true
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck

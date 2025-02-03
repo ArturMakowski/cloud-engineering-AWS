@@ -57,3 +57,6 @@ test:
 
 test-wheel-locally:
 	bash run.sh test:wheel-locally
+
+deploy-lambda:
+	bash run.sh deploy-lambda
