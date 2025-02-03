@@ -1,0 +1,42 @@
+FROM ghcr.io/astral-sh/uv:0.5.26 AS uv
+
+FROM public.ecr.aws/lambda/python:3.11-arm64 AS builder
+
+WORKDIR /build
+
+COPY pyproject.toml .
+COPY version.txt .
+COPY src/ ./src/
+
+ARG USER_ID
+ARG GROUP_ID
+ARG BUILD_DIR_REL_PATH
+ARG LAMBDA_LAYER_DIR_NAME
+
+# Bundle the dependencies into the Lambda layer directory
+RUN --mount=from=uv,source=/uv,target=/bin/uv \
+    uv export \
+        --no-group=dev \
+        --no-group=test \
+        --no-group=qa \
+        --group=aws-lambda \
+        --package aws-python | \
+    uv pip install \
+        --requirements=- \
+        --target /out/${BUILD_DIR_REL_PATH}/${LAMBDA_LAYER_DIR_NAME}/python \
+        --python-platform aarch64-manylinux2014 \
+        --python 3.11
+    # && rm -rf /out/${BUILD_DIR_REL_PATH}/${LAMBDA_LAYER_DIR_NAME}/python/boto3 \
+    # && rm -rf /out/${BUILD_DIR_REL_PATH}/${LAMBDA_LAYER_DIR_NAME}/python/botocore
+
+# Set permissions to match the host user
+RUN chown -R ${USER_ID}:${GROUP_ID} /out
+
+FROM scratch AS export
+
+ARG USER_ID
+ARG GROUP_ID
+ARG BUILD_DIR_REL_PATH
+ARG LAMBDA_LAYER_DIR_NAME
+
+COPY --from=builder /out/${BUILD_DIR_REL_PATH}/${LAMBDA_LAYER_DIR_NAME} /lambda

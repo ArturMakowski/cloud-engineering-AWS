@@ -6,16 +6,14 @@ readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "MIT" }
 dependencies = [
-    "boto3>=1.35.97",
+    "boto3>=1.36.2",
     "fastapi>=0.115.6",
-    "langchain-core>=0.3.29",
-    "langchain-openai>=0.2.14",
     "loguru>=0.7.3",
     "python-dotenv>=1.0.1",
     "python-multipart>=0.0.20",
     "uvicorn>=0.34.0",
-    "moto[server]>=5.0.26",
     "pydantic-settings>=2.7.1",
+    "openai>=1.59.5",
 ]
 classifiers = ["Programming Language :: Python :: 3"]
 keywords = ["one", "two"]
@@ -39,20 +37,23 @@ aws_python = ["*.json"]
 test = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
-    "moto[s3]>=5.0.26",
+    "moto[s3,server]>=5.0.26",
 ]
 qa = [
     "pre-commit",
 ]
 dev = [
-    "boto3-stubs[s3]>=1.35.97",
+    "boto3-stubs[s3]>=1.36.2",
     "ipykernel>=6.29.5",
     "ipywidgets>=8.1.5",
     "rich>=13.9.4",
     "types-requests>=2.32.0.20241016",
 ]
+aws-lambda = [
+    "mangum>=0.19.0",
+]
 # Note: For dev dependencies, you'll need to install multiple groups
-# uv sync --group test --group qa --group dev
+# uv sync --group test --group qa --group dev --group aws-lambda
 
 ##############################
 # --- Code Quality Tools --- #
