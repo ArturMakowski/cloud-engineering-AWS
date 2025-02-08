@@ -10,6 +10,8 @@ from aws_python.errors import (
     handle_broad_exceptions,
     handle_pydantic_validation_errors,
 )
+from aws_python.monitoring.logger import inject_lambda_context__middleware
+from aws_python.route_handler import RouteHandler
 from aws_python.routes import GENERATED_FILES_ROUTER, ROUTER
 from aws_python.settings import Settings
 
@@ -38,6 +40,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     )
     app.state.settings = settings
 
+    app.router.route_class = RouteHandler
     app.include_router(ROUTER)
     app.include_router(GENERATED_FILES_ROUTER)
 
@@ -46,6 +49,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         handler=handle_pydantic_validation_errors,
     )
     app.middleware("http")(handle_broad_exceptions)
+    app.middleware("http")(inject_lambda_context__middleware)
 
     return app
 

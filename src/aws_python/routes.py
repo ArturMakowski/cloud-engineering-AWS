@@ -14,6 +14,7 @@ from fastapi import (
     status,
 )
 from fastapi.responses import StreamingResponse
+from loguru import logger
 
 from aws_python.generate_files import (
     generate_image,
@@ -67,13 +68,17 @@ async def upload_file(
         response.status_code = status.HTTP_201_CREATED
 
     file_content: bytes = await file.read()
+    logger.debug("file_content: {file_content}", file_content=file_content)
     upload_s3_object(
         bucket_name=settings.s3_bucket_name,
         object_key=file_path,
         file_content=file_content,
         content_type=file.content_type,
     )
-
+    logger.info("response.status_code: {response.status_code}", response=response)
+    logger.info(
+        "response_message: {response_message}", response_message=response_message
+    )
     return PutFileResponse(
         file_path=file_path,
         message=response_message,
@@ -100,6 +105,7 @@ async def list_files(
             max_keys=query_params.page_size,
         )
 
+    logger.debug("query_params: {query_params}", query_params=query_params)
     file_metadata_objs = [
         FileMetadata(
             file_path=f"{item['Key']}",
@@ -108,6 +114,10 @@ async def list_files(
         )
         for item in files
     ]
+    logger.debug(
+        "file_metadata_objs: {file_metadata_objs}",
+        file_metadata_objs=file_metadata_objs,
+    )
     return GetFilesResponse(
         files=file_metadata_objs,
         next_page_token=next_page_token if next_page_token else None,
@@ -150,11 +160,18 @@ async def get_file_metadata(
         bucket_name=settings.s3_bucket_name, object_key=file_path
     )
     if not object_exists:
+        logger.error(
+            "File not found for the given `file_path`: {file_path}", file_path=file_path
+        )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
         )
 
     get_object_response = fetch_s3_object(settings.s3_bucket_name, object_key=file_path)
+    logger.debug(
+        "get_object_response: {get_object_response}",
+        get_object_response=get_object_response,
+    )
     response.headers["Content-Type"] = get_object_response["ContentType"]
     response.headers["Content-Length"] = str(get_object_response["ContentLength"])
     response.headers["Last-Modified"] = get_object_response["LastModified"].strftime(
@@ -191,6 +208,9 @@ async def get_file(
     )
 
     if not object_exists:
+        logger.error(
+            "File not found for the given `file_path`: {file_path}", file_path=file_path
+        )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
         )
@@ -224,6 +244,9 @@ async def delete_file(
     )
 
     if not object_exists:
+        logger.error(
+            "File not found for the given `file_path`: {file_path}", file_path=file_path
+        )
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND, detail="File not found"
         )
@@ -307,6 +330,8 @@ async def generate_file_using_openai(
     content_type: str | None = (  # type: ignore
         content_type or mimetypes.guess_type(query_params.file_path)[0]
     )
+    logger.debug("content_type: {content_type}", content_type=content_type)
+    logger.debug("file_path: {file_path}", file_path=query_params.file_path)
 
     # Upload the generated file to S3
     upload_s3_object(
@@ -318,6 +343,11 @@ async def generate_file_using_openai(
 
     # return response
     response.status_code = status.HTTP_201_CREATED
+    logger.info(
+        "New {file_type} file generated and uploaded at path: {file_path}",
+        file_type=query_params.file_type.value,
+        file_path=query_params.file_path,
+    )
     return PutGeneratedFileResponse(
         file_path=query_params.file_path,
         message=f"New {query_params.file_type.value} file generated and uploaded at path: {query_params.file_path}",

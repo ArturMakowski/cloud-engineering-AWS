@@ -38,6 +38,7 @@ test = [
     "pytest>=8.0.0",
     "pytest-cov>=4.1.0",
     "moto[s3,server]>=5.0.26",
+    "locust>=2.32.8",
 ]
 qa = [
     "pre-commit",

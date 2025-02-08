@@ -36,7 +36,7 @@ repos:
       - id: debug-statements
   # Python-specific hooks
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.9.2
+    rev: v0.9.5
     hooks:
       # Fast Python linter
       - id: ruff
@@ -44,7 +44,7 @@ repos:
       # Python formatter
       - id: ruff-format
   - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: "v1.14.1"
+    rev: "v1.15.0"
     hooks:
       - id: mypy
         args: [--no-strict-optional, --ignore-missing-imports, --config-file=./pyproject.toml]
@@ -108,7 +108,7 @@ repos:
       - id: detect-secrets
   # Commit message and branch naming conventions
   - repo: https://github.com/commitizen-tools/commitizen
-    rev: v4.1.0
+    rev: v4.2.0
     hooks:
       # Checks if the commit message matches the commitizen format
       - id: commitizen
@@ -142,7 +142,7 @@ repos:
       - id: doctoc
         args: ["--title", "## Table of Contents", "--maxlevel", "3"]
   - repo: https://github.com/igorshubovych/markdownlint-cli
-    rev: v0.43.0
+    rev: v0.44.0
     hooks:
       # Lints README.md, disabling: first line should be a top-level header
       - id: markdownlint
@@ -156,7 +156,7 @@ repos:
         exclude: README\.md
   - repo: https://github.com/astral-sh/uv-pre-commit
     # uv version.
-    rev: 0.5.21
+    rev: 0.5.29
     hooks:
       - id: uv-lock
       - id: pip-compile
