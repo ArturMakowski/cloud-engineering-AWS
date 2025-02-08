@@ -263,7 +263,7 @@ function deploy-lambda:cd {
         --build-arg GROUP_ID="$(id -g)" \
         --build-arg BUILD_DIR_REL_PATH="$BUILD_DIR_REL_PATH" \
         --build-arg LAMBDA_LAYER_DIR_NAME="$LAMBDA_LAYER_DIR_NAME" \
-        -f Dockerfile.lambda \
+        -f docker/Dockerfile.lambda \
         -t lambda-layer .
     docker create --name temp lambda-layer scratch
     docker cp temp:/lambda "${LAMBDA_LAYER_DIR}/"
@@ -308,6 +308,27 @@ function deploy-lambda:cd {
     rm -rf "$LAMBDA_LAYER_DIR" || true
     rm -f "$LAMBDA_LAYER_ZIP_FPATH" || true
     rm -rf "$BUILD_DIR_REL_PATH" || true
+}
+
+function set-local-aws-env-vars {
+    export AWS_PROFILE=aws-course-sso
+    export AWS_REGION=us-east-1
+}
+
+function run-docker {
+    set-local-aws-env-vars
+    aws configure export-credentials --profile $AWS_PROFILE --format env >> .env
+    docker compose --file docker/docker-compose.yaml up --build
+}
+
+function run-locust {
+    set-local-aws-env-vars
+    aws configure export-credentials --profile $AWS_PROFILE --format env > .env
+    docker compose \
+        --file docker/docker-compose.yaml \
+        --file docker/docker-compose.locust.yaml \
+        up \
+        --build
 }
 
 TIMEFORMAT="Task completed in %3lR"

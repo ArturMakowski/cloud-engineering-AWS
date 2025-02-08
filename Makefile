@@ -27,6 +27,7 @@ install:
 
 lint:
 	bash run.sh lint
+	bash run.sh clean
 
 lint-ci:
 	bash run.sh lint:ci
@@ -60,3 +61,9 @@ test-wheel-locally:
 
 deploy-lambda:
 	bash run.sh deploy-lambda
+
+run-docker:
+	bash run.sh run-docker
+
+run-locust:
+	bash run.sh run-locust
